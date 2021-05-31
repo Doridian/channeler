@@ -109,8 +109,19 @@ class Program:
 
         can_see_h = False
         for i, c in enumerate(code):
-            if can_see_h and c == 'H':
-                self.channels[ord(code[i + 1])] = i + 2
+            if can_see_h:
+                if c == 'H':
+                    self.channels[ord(code[i + 1])] = i + 2
+                elif c == 'h':
+                    v = ''
+                    j = i
+                    while True:
+                        j += 1
+                        x = code[j]
+                        if x == ' ':
+                            break
+                        v += x
+                    self.channels[int(v)] = i + len(v) + 2
             can_see_h = (c == '\r' or c == '\n')
 
         self.call_stack = [StackFrame(len(code) + 1, 0, 0, 0)]

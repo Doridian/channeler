@@ -1,5 +1,5 @@
 from program import IOHandler, Program
-from sys import argv, stdin, stdout
+from sys import argv, stdout
 from readchar import readchar
 
 fh = open(argv[1], 'rb')
