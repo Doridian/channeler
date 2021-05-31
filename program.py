@@ -77,6 +77,7 @@ class Program:
     channels: dict[str, int]
 
     state: StackFrame
+    memory: int
 
     code: str
     call_stack: list[StackFrame]
@@ -85,6 +86,7 @@ class Program:
         self.channels = {}
 
         self.state = StackFrame(0, 0, 0, 0)
+        self.memory = 0
 
         self.code = code
 
@@ -150,9 +152,27 @@ class Program:
                 self.state.r2 = val
             elif reg == 'c' or reg == 'C':
                 self.state.rc = val
+            elif reg == 'm' or reg == 'M':
+                self.memory = val
             else:
                 raise ValueError('Invalid register code "%s"!' % reg)
+        elif cmd == 'M': # Memory write
+            reg = self.readcode_char()
+            if reg == '1':
+                self.memory = self.state.r1
+            elif reg == '2':
+                self.memory = self.state.r2
+            elif reg == 'c' or reg == 'C':
+                self.memory = self.state.rc
+        elif cmd == 'm': # Memory read
+            reg = self.readcode_char()
+            if reg == '1':
+                self.state.r1 = self.memory
+            elif reg == '2':
+                self.state.r2 = self.memory
+            elif reg == 'c' or reg == 'C':
+                self.state.rc = self.memory
         elif cmd == 'R': # Return
             self.retn()
-        elif cmd == '#':
+        elif cmd == '#': # Comment
             self.readcode_until('\n')
