@@ -1,9 +1,9 @@
-# Game state is: MP012345678
-# Grid is:
+# How to play: Press number representing your grid position. Layout is as follows:
 # 012
 # 345
 # 678
 
+# Game state is: ....012345678
 Cm1000000000 
 
 ccP T ccQ T
