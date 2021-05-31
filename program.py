@@ -70,6 +70,8 @@ def op_dec(program: 'Program'):
 SPECIAL_CHANNELS['v'] = op_dec
 
 def find_special_channel(channel: int):
+    if channel < 0x20 or channel > 0x7f:
+        return None
     channel_char = chr(channel)
     if channel_char in SPECIAL_CHANNELS:
         return SPECIAL_CHANNELS[channel_char]
