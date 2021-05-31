@@ -201,5 +201,5 @@ class Program:
             self.retn()
         elif cmd == '#': # Comment
             self.readcode_until('\n')
-        elif cmd == 'D':
-            print('R1 = %d, R2 = %d, RC = %s, M = %d' % (self.state.r1, self.state.r2, self.state.rc, self.memory))
+        #elif cmd == 'D':
+        #    print('R1 = %d, R2 = %d, RC = %s, M = %d' % (self.state.r1, self.state.r2, self.state.rc, self.memory))
