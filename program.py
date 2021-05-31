@@ -109,7 +109,7 @@ class Program:
         for i, c in enumerate(code):
             if can_see_h:
                 if c == 'H':
-                    self.channels[ord(code[i + 1])] = i + 2
+                    self.register_channnel(ord(code[i + 1]), i + 2)
                 elif c == 'h':
                     v = ''
                     j = i
@@ -119,10 +119,17 @@ class Program:
                         if x == ' ':
                             break
                         v += x
-                    self.channels[int(v)] = i + len(v) + 2
+                    self.register_channnel(int(v), i + len(v) + 2)
             can_see_h = (c == '\r' or c == '\n')
 
         self.call_stack = [StackFrame(len(code) + 1, 0, 0, 0)]
+
+    def register_channnel(self, channel: int, handler: int):
+        if channel in self.channels:
+            raise ValueError('Cannot double-declare channel "%d"' % channel)
+        if find_special_channel(channel) is not None:
+            raise ValueError('Cannot clobber special channel "%d"' % channel)
+        self.channels[channel] = handler
 
     def call(self, state):
         self.call_stack.append(self.state)

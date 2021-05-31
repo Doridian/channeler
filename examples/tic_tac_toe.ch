@@ -113,17 +113,24 @@ R
 
 ### HANDLE WIN CHECK ###
 HW
+    # Horizontals
     m1
     ccH T
     cc/ C21000 T ccH T
     cc/ C21000 T ccH T
     
+    # Verticals
     m1
     ccV m2 T M2
     cc/ C210 T ccV m2 T M2
     cc/ C210 T ccV m2 T M2
 
+    # Diagonals
     m1
+    ccI T
+    M1
+    ccO T
+    M1
 R
 
 HH # Handle horizontal line
@@ -144,6 +151,45 @@ HV # Handle vertical line
     cc+ m2 T M1             # Add current state to it
 
     cc/ C21000000 T         # Divide by two rows
+    cc% C210 T              # Modulo 10 to strip off other rows
+    cc* C210000000000000 T  # Shift way out of game state to avoid clobbering
+    cc+ m2 T M1             # Add current state to it
+
+    cc/ C2100000000000 T    # Divide by the shift-out to get plain result
+    cc+ C29000 T            # Add 9000 for channel ID
+    ccX T T
+R
+HI # Handle diagonal 1
+    cc% C210 T              # Modulo 10 to strip off other rows (top left)
+    cc* C2100000000000 T    # Shift way out of game state to avoid clobbering
+    cc+ m2 T M1             # Add current state to it
+
+    cc/ C210000 T           # Go to middle cell
+    cc% C210 T              # Modulo 10 to strip off other rows
+    cc* C21000000000000 T   # Shift way out of game state to avoid clobbering
+    cc+ m2 T M1             # Add current state to it
+
+    cc/ C2100000000 T       # Bottom right
+    cc% C210 T              # Modulo 10 to strip off other rows
+    cc* C210000000000000 T  # Shift way out of game state to avoid clobbering
+    cc+ m2 T M1             # Add current state to it
+
+    cc/ C2100000000000 T    # Divide by the shift-out to get plain result
+    cc+ C29000 T            # Add 9000 for channel ID
+    ccX T T
+R
+HO # Handle diagonal 2
+    cc/ C2100 T             # Top right cell
+    cc% C210 T              # Modulo 10 to strip off other rows
+    cc* C2100000000000 T    # Shift way out of game state to avoid clobbering
+    cc+ m2 T M1             # Add current state to it
+
+    cc/ C210000 T           # Go to middle cell
+    cc% C210 T              # Modulo 10 to strip off other rows
+    cc* C21000000000000 T   # Shift way out of game state to avoid clobbering
+    cc+ m2 T M1             # Add current state to it
+
+    cc/ C21000000 T         # Bottom left
     cc% C210 T              # Modulo 10 to strip off other rows
     cc* C210000000000000 T  # Shift way out of game state to avoid clobbering
     cc+ m2 T M1             # Add current state to it
