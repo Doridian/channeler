@@ -51,10 +51,6 @@ def op_inn(program: 'Program'):
     program.state.r1 = int(program.io.input())
 SPECIAL_CHANNELS[';'] = op_inn
 
-def op_jump(program: 'Program'):
-    program.state.pos += program.state.r1
-SPECIAL_CHANNELS['>'] = op_jump
-
 def op_swap12(program: 'Program'):
     r1 = program.state.r1
     program.state.r1 = program.state.r2
