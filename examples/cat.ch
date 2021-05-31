@@ -7,7 +7,7 @@ HC        # Put "," into RC, transmit to read char, then put "." into RC, transm
     ccC T
 R
 
-HY # Check for 0 in R1
+HY        # Check for 0 in R1
     cc# T # sign operation
     ccX T # swap R1 to RC
     T     # call channel by sign
