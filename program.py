@@ -8,6 +8,9 @@ class StackFrame:
     r2: int
     rc: int
 
+class EndOfFileError(Exception):
+    pass
+
 SPECIAL_CHANNELS: dict[str, Callable[['Program'], None]] = {}
 
 def op_add(program: 'Program'):
@@ -157,7 +160,7 @@ class Program:
 
     def readcode_char(self):
         if self.state.pos >= len(self.code):
-            raise ValueError('Tried to read code out of boundaries...')
+            raise EndOfFileError('Tried to read code out of boundaries...')
         res = self.code[self.state.pos]
         self.state.pos += 1
         return res
@@ -186,7 +189,7 @@ class Program:
                     nextchar = None
                 elif nextchar == ' ' or nextchar == '\t' or nextchar == '\r' or nextchar == '\n':
                     nextchar = None
-        except ValueError:
+        except EndOfFileError:
             pass
 
         self.state.pos = pos
