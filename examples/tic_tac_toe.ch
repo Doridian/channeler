@@ -131,6 +131,10 @@ HW
     M1
     ccO T
     M1
+
+    # Check if entire field is filled (draw)
+    ccJ T
+    M1
 R
 
 HH # Handle horizontal line
@@ -199,6 +203,41 @@ HO # Handle diagonal 2
     ccX T T
 R
 
+HJ # Draw check
+    m1 cc% C21000000000 T M1    # Strip of all but the field from game state
+
+    ccK T
+    cc/ C210 T ccK T
+    cc/ C210 T ccK T
+    cc/ C210 T ccK T
+    cc/ C210 T ccK T
+    cc/ C210 T ccK T
+    cc/ C210 T ccK T
+    cc/ C210 T ccK T
+    cc/ C210 T ccK T
+
+    m1 cc/ C210000000000 T     # Read flag into R1 ones-digit
+    cc# T                      # Determine sign of flag (0 = no free fields, 1 = free fields)
+    cc+ C28000 T               # Add 8000 for channel
+    ccX T T
+R
+HK # Add 1 to the after-game-state field if field blank
+    cc% C210 T
+    cc# T # Will be 1 if field not blank
+    ccx T # This and the next "invert" the flag
+    cc- C11 T
+    cc* C210000000000 T # Multiply and write to memory cell
+    cc+ m2 T
+    M1
+R
+
+h8000
+    cc. c1DT c1rT c1aT c1wT c1!T
+    ccD T
+    X
+R
+h8001 R
+
 # Non-winning lines
 h9000 R
 h9001 R
@@ -228,10 +267,12 @@ h9221 R
 
 h9111 # Win for X
     cc. c1XT c1 T c1wT c1iT c1nT c1sT c1!T
+    ccD T
     X
 R
 h9222 # Win for O
     cc. c1OT c1 T c1wT c1iT c1nT c1sT c1!T
+    ccD T
     X
 R
 
