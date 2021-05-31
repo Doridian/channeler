@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from typing import Callable
-from sys import stdin, stdout, stderr
 
 @dataclass
 class StackFrame:
@@ -9,69 +8,76 @@ class StackFrame:
     r2: int
     rc: int
 
-SPECIAL_CHANNELS: dict[str, Callable[[StackFrame], None]] = {}
+SPECIAL_CHANNELS: dict[str, Callable[['Program'], None]] = {}
 
-def op_add(state: StackFrame):
-    state.r1 = state.r1 + state.r2
+def op_add(program: 'Program'):
+    program.state.r1 = program.state.r1 + program.state.r2
 SPECIAL_CHANNELS['+'] = op_add
-def op_sub(state: StackFrame):
-    state.r1 = state.r1 - state.r2
+def op_sub(program: 'Program'):
+    program.state.r1 = program.state.r1 - program.state.r2
 SPECIAL_CHANNELS['-'] = op_sub
-def op_mul(state: StackFrame):
-    state.r1 = state.r1 * state.r2
+def op_mul(program: 'Program'):
+    program.state.r1 = program.state.r1 * program.state.r2
 SPECIAL_CHANNELS['*'] = op_mul
-def op_div(state: StackFrame):
-    state.r1 = state.r1 // state.r2
+def op_div(program: 'Program'):
+    program.state.r1 = program.state.r1 // program.state.r2
 SPECIAL_CHANNELS['/'] = op_div
-def op_mod(state: StackFrame):
-    state.r1 = state.r1 % state.r2
+def op_mod(program: 'Program'):
+    program.state.r1 = program.state.r1 % program.state.r2
 SPECIAL_CHANNELS['%'] = op_mod
 
-def op_sign(state: StackFrame):
-    if state.r1 > 0:
-        state.r1 = 1
-    elif state.r1 < 0:
-        state.r1 = -1
+def op_sign(program: 'Program'):
+    if program.state.r1 > 0:
+        program.state.r1 = 1
+    elif program.state.r1 < 0:
+        program.state.r1 = -1
     else:
-        state.r1 = 0
+        program.state.r1 = 0
 SPECIAL_CHANNELS['#'] = op_sign
 
-def op_outc(state: StackFrame):
-    stdout.write(chr(state.r1))
-    stdout.flush()
+def op_outc(program: 'Program'):
+    program.io.output(chr(program.state.r1))
 SPECIAL_CHANNELS['.'] = op_outc
-def op_outn(state: StackFrame):
-    stdout.write(str(state.r1))
-    stdout.flush()
+def op_outn(program: 'Program'):
+    program.io.output(str(program.state.r1))
 SPECIAL_CHANNELS[':'] = op_outn
-def op_inc(state: StackFrame):
-    state.r1 = ord(stdin.read(1))
+def op_inc(program: 'Program'):
+    program.state.r1 = ord(program.io.input())
 SPECIAL_CHANNELS[','] = op_inc
-def op_inn(state: StackFrame):
-    state.r1 = int(stdin.read(1))
+def op_inn(program: 'Program'):
+    program.state.r1 = int(program.io.input())
 SPECIAL_CHANNELS[';'] = op_inn
 
-def op_jump(state: StackFrame):
-    state.pos += state.r1
+def op_jump(program: 'Program'):
+    program.state.pos += program.state.r1
 SPECIAL_CHANNELS['>'] = op_jump
 
-def op_swap12(state: StackFrame):
-    r1 = state.r1
-    state.r1 = state.r2
-    state.r2 = r1
+def op_swap12(program: 'Program'):
+    r1 = program.state.r1
+    program.state.r1 = program.state.r2
+    program.state.r2 = r1
 SPECIAL_CHANNELS['x'] = op_swap12
-def op_swap1c(state: StackFrame):
-    r1 = state.r1
-    state.r1 = state.rc
-    state.rc = r1
+def op_swap1c(program: 'Program'):
+    r1 = program.state.r1
+    program.state.r1 = program.state.rc
+    program.state.rc = r1
 SPECIAL_CHANNELS['X'] = op_swap1c
 
-def op_inc(state: StackFrame):
-    state.r1 += 1
+def op_inc(program: 'Program'):
+    program.state.r1 += 1
 SPECIAL_CHANNELS['^'] = op_inc
-def op_dec(state: StackFrame):
-    state.r1 -= 1
+def op_dec(program: 'Program'):
+    program.state.r1 -= 1
 SPECIAL_CHANNELS['v'] = op_dec
+
+class IOHandler:
+    def output(self, s: str):
+        """Output string specified by s."""
+        pass
+
+    def input(self) -> str:
+        """Input a single character and return it."""
+        pass
 
 class Program:
     channels: dict[str, int]
@@ -79,16 +85,18 @@ class Program:
     state: StackFrame
     memory: int
 
+    io: IOHandler
     code: str
     call_stack: list[StackFrame]
 
-    def __init__(self, code):
+    def __init__(self, code, io):
         self.channels = {}
 
         self.state = StackFrame(0, 0, 0, 0)
         self.memory = 0
 
         self.code = code
+        self.io = io
 
         can_see_h = False
         for i, c in enumerate(code):
@@ -108,7 +116,7 @@ class Program:
     def send(self):
         channel = chr(self.state.rc)
         if channel in SPECIAL_CHANNELS:
-            SPECIAL_CHANNELS[channel](self.state)
+            SPECIAL_CHANNELS[channel](self)
             return
 
         if channel not in self.channels:
