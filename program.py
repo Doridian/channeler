@@ -173,10 +173,13 @@ class Program:
     def readcode_int(self):
         return int(self.readcode_until(' '))
 
+    def peek_next_op(self):
+        pos = self.state.pos
+
+
     def step(self):
         cmd = self.readcode_char()
-        #stderr.write('Processing at %d\r\n' % (self.state.pos - 1))
-        #stderr.flush()
+
         if cmd == 'T': # Send to channel
             self.send()
         elif cmd == 'C' or cmd == 'c': # Load immediate constant numeric (C) or ASCII (c)
@@ -216,3 +219,7 @@ class Program:
             self.state.pos = len(self.code) + 1
         elif cmd == 'D':
             print('R1 = %d, R2 = %d, RC = %s, M = %d' % (self.state.r1, self.state.r2, self.state.rc, self.memory))
+        elif cmd == ' ' or cmd == '\n' or cmd == '\r':
+            pass
+        else:
+            raise ValueError('Unknown OpCode: %s' % cmd)
