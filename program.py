@@ -124,7 +124,7 @@ class Program:
 
         if channel not in self.channels:
             raise ValueError('Channel "%s" does not exist' % channel)
-        self.call(StackFrame(self.channels[channel], self.state.r1, self.state.r2, channel))
+        self.call(StackFrame(self.channels[channel], self.state.r1, self.state.r2, self.state.rc))
 
     def run(self):
         self.state = StackFrame(0, 0, 0, 0)
@@ -187,3 +187,5 @@ class Program:
             self.retn()
         elif cmd == '#': # Comment
             self.readcode_until('\n')
+        elif cmd == 'D':
+            print('R1 = %d, R2 = %d, RC = %s, M = %d' % (self.state.r1, self.state.r2, chr(self.state.rc), self.memory))

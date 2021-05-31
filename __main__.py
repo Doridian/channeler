@@ -1,6 +1,6 @@
 from program import IOHandler, Program
-from sys import argv
-from sys import stdin, stdout
+from sys import argv, stdin, stdout
+from readchar import readchar
 
 fh = open(argv[1], 'rb')
 code = fh.read().decode('utf8')
@@ -12,7 +12,9 @@ class StdIOHandler(IOHandler):
         stdout.flush()
 
     def input(self) -> str:
-        return stdin.read(1)
+        ch = readchar().decode('utf8')
+        self.output(ch)
+        return ch
 
 program = Program(code, StdIOHandler())
 program.run()
