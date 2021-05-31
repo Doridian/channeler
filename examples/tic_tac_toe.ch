@@ -24,7 +24,23 @@ H3  # Here we know we have a valid move
     cc+ T
     M1
 
-    # TODO: Swap active player
+    # Memory is still in R1 here, as we just stored it
+    # Put active player in R1
+    C21000000000 cc/ T
+
+    # Modulo 2, then add 1 (1 -> 2, 2 -> 1)
+    cc% C22 T
+    cc+ C21 T
+
+    # Multiply back to "full scale"
+    cc* C21000000000 T
+
+    # Strip active player from M
+    cc7 T
+    
+    # Load memory into R2, add new active player ontop and write back
+    m2 cc+ T
+    M1
 R
 
 H4 ccF T R     # Invalid move
@@ -40,15 +56,22 @@ H6             # Valid move "position" in R1, memory in R2, called by "3", handl
     M1
 R
 
+H7             # Strips active player from game state
+    m1
+    C21000000000 cc% T
+    M1
+R
+
 ### PRINT HANDLERS ###
 
 H0 cc. c1  T R                                                         # Print space
 H1 cc. c1X T R                                                         # Print X
 H2 cc. c1O T R                                                         # Print O
+
 HA cc% C210 T cc+ c20 T ccX T T R                                      # Modulo R1 by 10, add '0', go to that channel
-HB ccA T C210 cc/ T ccA T C210 cc/ T ccA T cc. C110 T R     # Prints one line
+HB ccA T C210 cc/ T ccA T C210 cc/ T ccA T cc. C110 T R                # Prints one line
 HC cc. c1PT c1lT c1aT c1yT c1eT c1rT c1:T c1 T R                       # Print "Player: " 
-HD cc. C113 T C110 T R                                                        # Print "\r\n"
+HD cc. C113 T C110 T R                                                 # Print "\r\n"
 HE cc. c1MT c1oT c1vT c1eT c1:T c1 T R                                 # Print "Move: "
 HF cc. c1IT c1nT c1vT c1aT c1lT c1iT c1dT c1!T ccD T R                 # Print "Invalid!\n"
 HP m1 C21000 ccB T                                                     # Print field and current player
