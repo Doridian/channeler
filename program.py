@@ -123,14 +123,17 @@ class Program:
         self.state.pos += 1
         return res
 
-    def readcode_int(self):
+    def readcode_until(self, delim):
         val = ''
         while True:
             nexthcar = self.readcode_char()
-            if nexthcar == ' ':
+            if nexthcar == delim:
                 break
             val += nexthcar
-        return int(val)
+        return val
+
+    def readcode_int(self):
+        return int(self.readcode_until(' '))
 
     def step(self):
         cmd = self.readcode_char()
@@ -151,3 +154,5 @@ class Program:
                 raise ValueError('Invalid register code "%s"!' % reg)
         elif cmd == 'R': # Return
             self.retn()
+        elif cmd == '#':
+            self.readcode_until('\n')
