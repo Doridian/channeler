@@ -14,5 +14,5 @@ class StdIOHandler(IOHandler):
     def input(self) -> str:
         return stdin.read(1)
 
-prog = Program(code, StdIOHandler())
-prog.run()
+program = Program(code, StdIOHandler())
+program.run()
