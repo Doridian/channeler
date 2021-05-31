@@ -1,4 +1,4 @@
-# Define state handlers as channel handlers by number ST, add 9000, such as 9010 would be "state 1, tape is 0", 9021 would be "state 2, tape is 1"
+# Define state handlers as channel handlers by number negative ST, -10 would be "state 1, tape is 0", -21 would be "state 2, tape is 1"
 # Operations are:
 #   ccET for "set tape 0", ccWT for "set tape 1"
 #   ccLT for "move left", ccRT for "move right" and ccHT for "halt"
@@ -19,12 +19,12 @@ ccA T
 
 # DEFINE YOUR HANDLERS HERE
 # This example is a 3-state busy beaver
-h9000 ccWT ccRT C11 ccST R
-h9001 ccWT ccLT C12 ccST R
-h9010 ccWT ccLT C10 ccST R
-h9011 ccWT ccRT C11 ccST R
-h9020 ccWT ccLT C11 ccST R
-h9021 ccWT ccHT R
+h-00 ccWT ccRT C11 ccST R
+h-01 ccWT ccLT C12 ccST R
+h-10 ccWT ccLT C10 ccST R
+h-11 ccWT ccRT C11 ccST R
+h-20 ccWT ccLT C11 ccST R
+h-21 ccWT ccHT R
 # END DEFINE HANDLERS
 
 
@@ -33,7 +33,7 @@ HA
     m2 ccCT m1 M2
     # cc:T ccNT
 
-    C29000 cc+ T
+    ccxT C10  cc- T
     ccXT T
 
     ccA T
