@@ -13,6 +13,8 @@ class StdIOHandler(IOHandler):
 
     def input(self) -> str:
         ch = readchar().decode('utf8')
+        if ord(ch) == 3: # End-of-input
+            return '\0'
         self.output(ch)
         return ch
 
