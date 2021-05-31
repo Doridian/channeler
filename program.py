@@ -113,7 +113,7 @@ class Program:
                 elif c == 'h':
                     v = ''
                     j = i
-                    while True:
+                    while j < len(code):
                         j += 1
                         x = code[j]
                         if x == ' ':
