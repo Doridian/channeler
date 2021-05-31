@@ -132,7 +132,8 @@ class Program:
         self.channels[channel] = handler
 
     def call(self, state):
-        self.call_stack.append(self.state)
+        if self.peek_next_op() != 'R':
+            self.call_stack.append(self.state)
         self.state = state
 
     def retn(self):
@@ -164,18 +165,33 @@ class Program:
     def readcode_until(self, delim):
         val = ''
         while True:
-            nexthcar = self.readcode_char()
-            if nexthcar == delim:
+            nextchar = self.readcode_char()
+            if nextchar in delim:
                 break
-            val += nexthcar
+            val += nextchar
         return val
 
     def readcode_int(self):
-        return int(self.readcode_until(' '))
+        return int(self.readcode_until([' ', '\t', '\r', '\n']))
 
     def peek_next_op(self):
         pos = self.state.pos
 
+        nextchar = None
+        try:
+            while nextchar is None:
+                nextchar = self.readcode_char()
+                if nextchar == '#':
+                    self.readcode_until(['\r', '\n'])
+                    nextchar = None
+                elif nextchar == ' ' or nextchar == '\t' or nextchar == '\r' or nextchar == '\n':
+                    nextchar = None
+        except ValueError:
+            pass
+
+        self.state.pos = pos
+
+        return nextchar
 
     def step(self):
         cmd = self.readcode_char()
@@ -214,12 +230,12 @@ class Program:
         elif cmd == 'R': # Return
             self.retn()
         elif cmd == '#': # Comment
-            self.readcode_until('\n')
+            self.readcode_until(['\r', '\n'])
         elif cmd == 'X': # Exit
             self.state.pos = len(self.code) + 1
         elif cmd == 'D':
-            print('R1 = %d, R2 = %d, RC = %s, M = %d' % (self.state.r1, self.state.r2, self.state.rc, self.memory))
-        elif cmd == ' ' or cmd == '\n' or cmd == '\r':
+            print('R1 = %d, R2 = %d, RC = %s, M = %d, D = %d' % (self.state.r1, self.state.r2, self.state.rc, self.memory, len(self.call_stack)))
+        elif cmd == ' ' or cmd == '\t' or cmd == '\r' or cmd == '\n':
             pass
         else:
             raise ValueError('Unknown OpCode: %s' % cmd)

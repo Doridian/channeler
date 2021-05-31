@@ -4,13 +4,13 @@
 #   ccLT for "move left", ccRT for "move right" and ccHT for "halt"
 #   Switch to state using C1S ccST (S being number of state after C1)
 
-# DEFINE INITIAL TAPE BELOW (retain space at line end)
-Cm0 
+# DEFINE INITIAL TAPE BELOW
+Cm0
 
 M1 C2100000000 cc* T m1
 
-# DEFINE INITIAL STATE BELOW (make sure to keep the trailing space!)
-C10 
+# DEFINE INITIAL STATE BELOW
+C10
 
 cc+ m2 T M1
 cc+ m1 C250000000 T M1
@@ -36,8 +36,8 @@ HA
     ccxT C10  cc- T
     ccXT T
 
-    ccA T
-R
+ccA T R
+
 HN cc. C113 T C110 T R
 HB # Write tape at current position to M
     # Extract current tape pos to R1
@@ -46,7 +46,7 @@ HB # Write tape at current position to M
     C210000 cc/ T
 
     cc+ C28 T  ccxT cc$  C110 T # 10^(position+8)
-    
+
     ccxT
     cc/ m1 T # Divide memory by number to get it into ones digit
     cc% C210 T # Modulo 10 to extact digit
@@ -98,7 +98,7 @@ HE # Erase tape (0)
     C210000 cc/ T
 
     cc+ C28 T  ccxT cc$  C110 T # 10^(position+8)
-    
+
     ccxT
     cc/ m1 T # Divide memory by number to get it into ones digit
     cc% C210 T # Modulo 10 to extact digit
@@ -113,7 +113,7 @@ h201
     C210000 cc/ T
 
     cc+ C28 T  ccxT cc$  C110 T # 10^(position+8)
-    
+
     ccxT cc- m1 T M1 # Remove 1 at the position ancl write to memory
 R
 

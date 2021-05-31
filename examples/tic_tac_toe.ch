@@ -4,11 +4,11 @@
 # 678
 
 # Game state is: ....012345678
-Cm1000000000 
+Cm1000000000
 
 ccP T ccQ T
 ccL T
-HL ccM T ccP T ccW T ccQ T ccL T R                                                 # Game loop
+HL ccM T ccP T ccW T ccQ T ccL T R                        # Game loop
 R
 
 ### SINGLE MOVE HANDLERS ###
@@ -38,7 +38,7 @@ H3  # Here we know we have a valid move
 
     # Strip active player from M
     cc7 T
-    
+
     # Load memory into R2, add new active player ontop and write back
     m2 cc+ T
     M1
@@ -71,7 +71,7 @@ H2 cc. c1O T R                                                         # Print O
 
 HA cc% C210 T cc+ c20 T ccX T T R                                      # Modulo R1 by 10, add '0', go to that channel
 HB ccA T C210 cc/ T ccA T C210 cc/ T ccA T cc. C110 T R                # Prints one line
-HC cc. c1PT c1lT c1aT c1yT c1eT c1rT c1:T c1 T R                       # Print "Player: " 
+HC cc. c1PT c1lT c1aT c1yT c1eT c1rT c1:T c1 T R                       # Print "Player: "
 HD cc. C113 T C110 T R                                                 # Print "\r\n"
 HE cc. c1MT c1oT c1vT c1eT c1:T c1 T R                                 # Print "Move: "
 HF cc. c1IT c1nT c1vT c1aT c1lT c1iT c1dT c1!T ccD T R                 # Print "Invalid!\n"
@@ -103,7 +103,7 @@ HM                                                                     # Move ha
     ccD T
 
     C210000000000 cc/ T ccx T                                          # Get move data back into R2
-    
+
     C110 cc$ T                                                         # R1 = 10^R2, so the "position"
     ccx T                                                              # R2 = "position" now
     cc/ m1 T                                                           # Divide memory by R2
@@ -118,7 +118,7 @@ HW
     ccH T
     cc/ C21000 T ccH T
     cc/ C21000 T ccH T
-    
+
     # Verticals
     m1
     ccV m2 T M2
