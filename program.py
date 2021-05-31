@@ -148,7 +148,7 @@ class Program:
                 self.state.r1 = val
             elif reg == '2':
                 self.state.r2 = val
-            elif reg == 'c':
+            elif reg == 'c' or reg == 'C':
                 self.state.rc = val
             else:
                 raise ValueError('Invalid register code "%s"!' % reg)
