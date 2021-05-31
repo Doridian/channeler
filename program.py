@@ -25,6 +25,9 @@ SPECIAL_CHANNELS['/'] = op_div
 def op_mod(program: 'Program'):
     program.state.r1 = program.state.r1 % program.state.r2
 SPECIAL_CHANNELS['%'] = op_mod
+def op_pow(program: 'Program'):
+    program.state.r1 = pow(program.state.r1, program.state.r2)
+SPECIAL_CHANNELS['$'] = op_pow
 
 def op_sign(program: 'Program'):
     if program.state.r1 > 0:
@@ -120,7 +123,7 @@ class Program:
             return
 
         if channel not in self.channels:
-            raise ValueError('Channel "%d" does not exist' % channel)
+            raise ValueError('Channel "%s" does not exist' % channel)
         self.call(StackFrame(self.channels[channel], self.state.r1, self.state.r2, channel))
 
     def run(self):
