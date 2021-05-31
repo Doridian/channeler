@@ -155,6 +155,8 @@ class Program:
             self.step()
 
     def readcode_char(self):
+        if self.state.pos >= len(self.code):
+            raise ValueError('Tried to read code out of boundaries...')
         res = self.code[self.state.pos]
         self.state.pos += 1
         return res
