@@ -6,11 +6,12 @@
 
 Cm1000000000 
 
+ccP T ccQ T
 ccL T
-
-HL ccP T ccM T ccL T R                                                 # Game loop
+HL ccM T ccP T ccW T ccQ T ccL T R                                                 # Game loop
 R
 
+### SINGLE MOVE HANDLERS ###
 H3  # Here we know we have a valid move
     # Get move position back into R1
     m1
@@ -61,9 +62,9 @@ H7             # Strips active player from game state
     C21000000000 cc% T
     M1
 R
+### END SINGLE MOVE HANDLERS ###
 
 ### PRINT HANDLERS ###
-
 H0 cc. c1  T R                                                         # Print space
 H1 cc. c1X T R                                                         # Print X
 H2 cc. c1O T R                                                         # Print O
@@ -74,13 +75,20 @@ HC cc. c1PT c1lT c1aT c1yT c1eT c1rT c1:T c1 T R                       # Print "
 HD cc. C113 T C110 T R                                                 # Print "\r\n"
 HE cc. c1MT c1oT c1vT c1eT c1:T c1 T R                                 # Print "Move: "
 HF cc. c1IT c1nT c1vT c1aT c1lT c1iT c1dT c1!T ccD T R                 # Print "Invalid!\n"
-HP m1 C21000 ccB T                                                     # Print field and current player
+HP                                                                     # Print field
+    m1 C21000
+          ccB T
     cc/ T ccB T
     cc/ T ccB T
-    cc/ T ccC T ccA T ccD T
+    cc/ T ccD T
+R
+HQ                                                                     # Print current player
+    m1 C21000000000 cc/ T
+    ccC T ccA T ccD T
 R
 ### END PRINT HANDLERS ###
 
+### HANDLE SINGLE GAME LOOP ITERATION ###
 HM                                                                     # Move handler
     m1                                                                 # Clear any possibly stale move data
     C210000000000 cc% T
@@ -102,3 +110,83 @@ HM                                                                     # Move ha
     cc% C210 T                                                         # Modulo by 10
     cc+ c23 T ccX T T                                                  # Jump to channel "3"+fielddata (0 if empty, processing a move, otherwise just no-op)
 R
+
+### HANDLE WIN CHECK ###
+HW
+    m1
+    ccH T
+    cc/ C21000 T ccH T
+    cc/ C21000 T ccH T
+    
+    m1
+    ccV m2 T M2
+    cc/ C210 T ccV m2 T M2
+    cc/ C210 T ccV m2 T M2
+
+    m1
+R
+
+HH # Handle horizontal line
+    cc% C21000 T # Only handle current line
+    cc+ C29000 T # Add 9000 for channel ID
+    ccX T T
+R
+HV # Handle vertical line
+    M1                      # Put shifted state into memory
+
+    cc% C210 T              # Modulo 10 to strip off other rows
+    cc* C2100000000000 T    # Shift way out of game state to avoid clobbering
+    cc+ m2 T M1             # Add current state to it
+
+    cc/ C21000 T            # Divide by one row
+    cc% C210 T              # Modulo 10 to strip off other rows
+    cc* C21000000000000 T   # Shift way out of game state to avoid clobbering
+    cc+ m2 T M1             # Add current state to it
+
+    cc/ C21000000 T         # Divide by two rows
+    cc% C210 T              # Modulo 10 to strip off other rows
+    cc* C210000000000000 T  # Shift way out of game state to avoid clobbering
+    cc+ m2 T M1             # Add current state to it
+
+    cc/ C2100000000000 T    # Divide by the shift-out to get plain result
+    cc+ C29000 T            # Add 9000 for channel ID
+    ccX T T
+R
+
+# Non-winning lines
+h9000 R
+h9001 R
+h9002 R
+h9010 R
+h9011 R
+h9012 R
+h9020 R
+h9021 R
+h9022 R
+h9100 R
+h9101 R
+h9102 R
+h9110 R
+h9112 R
+h9120 R
+h9121 R
+h9122 R
+h9200 R
+h9201 R
+h9202 R
+h9210 R
+h9211 R
+h9212 R
+h9220 R
+h9221 R
+
+h9111 # Win for X
+    cc. c1XT c1 T c1wT c1iT c1nT c1sT c1!T
+    X
+R
+h9222 # Win for O
+    cc. c1OT c1 T c1wT c1iT c1nT c1sT c1!T
+    X
+R
+
+### END HANDLE WIN CHECK ###
