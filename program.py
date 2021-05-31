@@ -73,6 +73,12 @@ def op_dec(program: 'Program'):
     program.state.r1 -= 1
 SPECIAL_CHANNELS['v'] = op_dec
 
+def find_special_channel(channel: int):
+    channel_char = chr(channel)
+    if channel_char in SPECIAL_CHANNELS:
+        return SPECIAL_CHANNELS[channel_char]
+    return None
+
 class IOHandler:
     def output(self, s: str):
         """Output string specified by s."""
@@ -104,7 +110,7 @@ class Program:
         can_see_h = False
         for i, c in enumerate(code):
             if can_see_h and c == 'H':
-                self.channels[code[i + 1]] = i + 2
+                self.channels[ord(code[i + 1])] = i + 2
             can_see_h = (c == '\r' or c == '\n')
 
         self.call_stack = [StackFrame(len(code) + 1, 0, 0, 0)]
@@ -117,9 +123,10 @@ class Program:
         self.state = self.call_stack.pop()
 
     def send(self):
-        channel = chr(self.state.rc)
-        if channel in SPECIAL_CHANNELS:
-            SPECIAL_CHANNELS[channel](self)
+        channel = self.state.rc
+        special_channel = find_special_channel(channel)
+        if special_channel is not None:
+            special_channel(self)
             return
 
         if channel not in self.channels:
@@ -188,4 +195,4 @@ class Program:
         elif cmd == '#': # Comment
             self.readcode_until('\n')
         elif cmd == 'D':
-            print('R1 = %d, R2 = %d, RC = %s, M = %d' % (self.state.r1, self.state.r2, chr(self.state.rc), self.memory))
+            print('R1 = %d, R2 = %d, RC = %s, M = %d' % (self.state.r1, self.state.r2, self.state.rc, self.memory))
