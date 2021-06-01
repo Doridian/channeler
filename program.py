@@ -119,7 +119,7 @@ class Program:
                     while j < len(code):
                         j += 1
                         x = code[j]
-                        if x == ' ':
+                        if x == ' ' or x == '\t' or x == '\r' or x == '\n':
                             break
                         v += x
                     self.register_channnel(int(v), i + len(v) + 2)
